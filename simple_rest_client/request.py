@@ -19,6 +19,7 @@ def make_request(session, request):
         params=request.params,
         data=request.body,
         headers=request.headers,
+        cookies=request.cookies,
         timeout=request.timeout,
         **request.kwargs
     )
@@ -54,8 +55,12 @@ async def make_async_request(session, request):
     with async_timeout.timeout(request.timeout):
         session_method = getattr(session, method.lower())
         async with session_method(
-                request.url, params=request.params, data=request.body,
-                headers=request.headers, **request.kwargs) as client_response:
+                request.url,
+                params=request.params,
+                data=request.body,
+                headers=request.headers,
+                cookies=request.cookies,
+                **request.kwargs) as client_response:
             content_type = client_response.headers.get('Content-Type', '')
             if 'text' in content_type:
                 body = await client_response.text()
